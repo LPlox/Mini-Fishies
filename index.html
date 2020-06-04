@@ -1,0 +1,104 @@
+<html>
+  <head>
+    <script src="https://unpkg.com/aframe@latest"></script>
+    <script src="https://raw.githack.com/donmccurdy/aframe-extras/master/dist/aframe-extras.loaders.min.js"></script>
+    <script src="https://unpkg.com/three@latest/examples/js/libs/inflate.min.js"></script>
+  </head>
+  <body>
+    <script type="text/javascript">
+      AFRAME.registerComponent("drag-rotate-component", {
+        schema: { speed: { default: 3 } },
+        init: function () {
+          this.ifMouseDown = false;
+          this.x_cord = 0;
+          this.y_cord = 0;
+          document.addEventListener(
+            "mousedown",
+            this.OnDocumentMouseDown.bind(this)
+          );
+          document.addEventListener(
+            "mouseup",
+            this.OnDocumentMouseUp.bind(this)
+          );
+          document.addEventListener(
+            "mousemove",
+            this.OnDocumentMouseMove.bind(this)
+          );
+        },
+        OnDocumentMouseDown: function (event) {
+          this.ifMouseDown = true;
+          this.x_cord = event.clientX;
+          this.y_cord = event.clientY;
+        },
+        OnDocumentMouseUp: function () {
+          this.ifMouseDown = false;
+        },
+        OnDocumentMouseMove: function (event) {
+          if (this.ifMouseDown) {
+            var temp_x = event.clientX - this.x_cord;
+            var temp_y = event.clientY - this.y_cord;
+            if (Math.abs(temp_y) < Math.abs(temp_x)) {
+              this.el.object3D.rotateY((temp_x * this.data.speed) / 1000);
+            } else {
+              this.el.object3D.rotateX((temp_y * this.data.speed) / 1000);
+            }
+            this.x_cord = event.clientX;
+            this.y_cord = event.clientY;
+          }
+        },
+      });
+    </script>
+    <a-scene
+      vr-mode-ui="enabled: false"
+      shadow="autoUpdate:true; type:pcfsoft"
+      effects="bloom, godrays, fxaa"
+      godrays="src: #moon; threshold: 0.0 0.0; intensity: 0.6"
+      bloom="strength:0.6; radius: 0.066;"
+      fxaa=""
+      inspector=""
+      keyboard-shortcuts=""
+      screenshot=""
+      device-orientation-permission-ui=""
+      background="color: #22455E"
+    >
+      <a-assets>
+        <a-asset-item id="oceanBt" src="assets\OceanBottom.gltf"></a-asset-item>
+        <a-asset-item id="oceanLf" src="assets\OceanLeafs.gltf"></a-asset-item>
+        <a-asset-item id="fish" src="assets\Fish.gltf"></a-asset-item>
+      </a-assets>
+
+      <a-entity id="rig" position="3 1.6 3" rotation="0 45 0">
+        <a-entity id="camera" camera look-controls="enabled: false;"></a-entity>
+      </a-entity>
+      <a-entity drag-rotate-component>
+        <a-entity
+          gltf-model="#oceanBt"
+          scale="0.2 0.2 0.2"
+          shadow="cast: false"
+        ></a-entity>
+        <a-entity
+          gltf-model="#oceanLf"
+          scale="0.2 0.2 0.2"
+          rotation="0 -90 0"
+          animation-mixer
+          shadow
+        ></a-entity>
+        <a-entity
+          gltf-model="#fish"
+          animation="property: rotation; to: 0 -360 0; loop: true; dur: 10000; easing: linear;"
+          scale="0.2 0.2 0.2"
+          shadow
+        ></a-entity>
+        <a-entity
+          light="color: #9da6aa; type: ambient; intensity: 1"
+          id="amb-light"
+        ></a-entity>
+        <a-entity
+          id="dir-light"
+          light="color: #bac2ca; castShadow: true"
+          position="1.63944 3.62475 0.0453"
+        ></a-entity>
+      </a-entity>
+    </a-scene>
+  </body>
+</html>
